@@ -37,7 +37,7 @@ function App() {
     formData.append('column_name', columnName);
 
     try {
-      const response = await axios.post('https://ani1111111.github.io/VisualizeData/plot', formData, {
+      const response = await axios.post('https://anny82191.pythonanywhere.com/plot', formData, {
         responseType: 'blob'
       });
 
