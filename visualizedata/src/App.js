@@ -6,13 +6,30 @@ function App() {
   const [file, setFile] = useState(null);
   const [plotType, setPlotType] = useState('scatter');
   const [columnName, setColumnName] = useState('');
+  const [columnHeaders, setColumnHeaders] = useState([]);
   const [plotImage, setPlotImage] = useState(null);
   const [imageBlob, setImageBlob] = useState(null); // New state for storing image blob
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+    const file = event.target.files[0];
+    setFile(file);
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const data = reader.result;
+        const lines = data.split('\n');
+        if (lines.length > 0) {
+          const headers = lines[0].split(','); // Assumes CSV is comma-separated
+          setColumnHeaders(headers);
+        }
+      };
+
+      reader.readAsText(file);
+    }
   };
 
   const handlePlotTypeChange = (event) => {
@@ -91,10 +108,15 @@ function App() {
           </select>
         </label>
         <br />
-        {['histogram', 'boxplot', 'scatter', 'line', 'bar', 'pie', 'area'].includes(plotType) &&
+        {['histogram', 'boxplot', 'scatter', 'line', 'bar', 'pie', 'area'].includes(plotType) && columnHeaders.length > 0 &&
           <label>
             Column Name:
-            <input type="text" value={columnName} onChange={handleColumnNameChange} />
+            <select value={columnName} onChange={handleColumnNameChange}>
+              <option value="">Select a column</option>
+              {columnHeaders.map((header, index) => (
+                <option key={index} value={header}>{header}</option>
+              ))}
+            </select>
           </label>
         }
         <br />
